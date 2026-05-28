@@ -40,19 +40,58 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
-  const isPublic = isAuthPage;
+  const pathname = request.nextUrl.pathname;
+  const isAuthRoute = pathname.startsWith("/login");
+  const isResetPassword = pathname === "/login/reset";
+  const isForgotPassword = pathname === "/login/forgot";
 
-  if (!user && !isPublic) {
+  if (!user && !isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+  if (user) {
+    const { data: factors } = await supabase.auth.mfa.listFactors();
+    const hasVerifiedTotp = !!factors?.totp?.some(
+      (f) => f.status === "verified"
+    );
+
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+    const isEnrollMfa = pathname === "/login/enroll-mfa";
+    const isVerifyMfa = pathname === "/login/verify-mfa";
+
+    if (!hasVerifiedTotp) {
+      if (!isEnrollMfa) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/login/enroll-mfa";
+        return NextResponse.redirect(url);
+      }
+      return supabaseResponse;
+    }
+
+    const needsMfaStep =
+      aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2";
+
+    if (needsMfaStep) {
+      if (!isVerifyMfa && pathname !== "/login") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/login/verify-mfa";
+        return NextResponse.redirect(url);
+      }
+      return supabaseResponse;
+    }
+
+    if (isAuthRoute) {
+      if (isResetPassword || isForgotPassword) {
+        return supabaseResponse;
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

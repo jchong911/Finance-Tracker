@@ -39,8 +39,9 @@ npm install
    - `supabase/migrations/007_fixed_expenses.sql`
    - `supabase/migrations/008_goal_piggybank.sql`
 3. In **Authentication → Providers**, ensure **Email** is enabled.
-4. For solo use, you can disable email confirmation under **Authentication → Settings** (optional, speeds up first login).
-5. Copy **Project URL** and **anon public key** from **Project Settings → API**.
+4. In **Authentication → Multi-factor Auth**, enable **TOTP** (authenticator app).
+5. For solo use, you can disable email confirmation under **Authentication → Settings** (optional, speeds up first login).
+6. Copy **Project URL** and **anon public key** from **Project Settings → API**.
 
 ### 3. Environment variables
 
@@ -106,3 +107,8 @@ supabase/
 - Recurring transactions
 - CSV import
 - Charts and year-over-year comparisons
+
+## Password help
+
+- **Forgot password**: go to `/login` → **Forgot password?** and enter your email. You’ll receive a reset link.
+- **Change password (while logged in)**: open `/settings/password`.

@@ -16,3 +16,5 @@
 {"sessionId":"ad41e4","runId":"pre-fix","hypothesisId":"H3","location":"src/lib/incomeScan.ts:14","message":"setting pdfjs workerSrc","data":{"beforeWorkerSrc":""},"timestamp":1779943308169}
 {"sessionId":"ad41e4","runId":"pre-fix","hypothesisId":"H1","location":"src/lib/incomeScan.ts:6","message":"incomeScan module loaded","data":{"hasWindow":true,"workerImportType":"object","workerImportKeys":["WorkerMessageHandler"]},"timestamp":1779943372077}
 {"sessionId":"ad41e4","runId":"pre-fix","hypothesisId":"H3","location":"src/lib/incomeScan.ts:14","message":"setting pdfjs workerSrc","data":{"beforeWorkerSrc":""},"timestamp":1779943372077}
+{"sessionId":"ad41e4","runId":"pre-fix","hypothesisId":"H1","location":"src/lib/incomeScan.ts:6","message":"incomeScan module loaded","data":{"hasWindow":true,"workerImportType":"object","workerImportKeys":["WorkerMessageHandler"]},"timestamp":1779945453043}
+{"sessionId":"ad41e4","runId":"pre-fix","hypothesisId":"H3","location":"src/lib/incomeScan.ts:14","message":"setting pdfjs workerSrc","data":{"beforeWorkerSrc":""},"timestamp":1779945453043}
