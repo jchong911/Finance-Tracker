@@ -38,6 +38,9 @@ npm install
    - `supabase/migrations/006_goal_status.sql`
    - `supabase/migrations/007_fixed_expenses.sql`
    - `supabase/migrations/008_goal_piggybank.sql`
+   - `supabase/migrations/009_budget_ratios.sql`
+   - `supabase/migrations/010_budget_ratio_category_map.sql`
+   - `supabase/migrations/011_expense_budget_bucket.sql`
 3. In **Authentication → Providers**, ensure **Email** is enabled.
 4. In **Authentication → Multi-factor Auth**, enable **TOTP** (authenticator app).
 5. For solo use, you can disable email confirmation under **Authentication → Settings** (optional, speeds up first login).

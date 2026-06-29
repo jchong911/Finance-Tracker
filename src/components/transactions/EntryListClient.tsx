@@ -68,6 +68,17 @@ export function EntryListClient({
                   Fixed
                 </p>
               )}
+              {!isIncome && entry.budget_bucket && (
+                <p
+                  className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                    entry.budget_bucket === "needs"
+                      ? "bg-expense/15 text-expense"
+                      : "bg-income/15 text-income"
+                  }`}
+                >
+                  {entry.budget_bucket === "needs" ? "Need" : "Want"}
+                </p>
+              )}
               <p className="text-xs text-muted">
                 {entry.categories?.name && entry.description
                   ? `${entry.categories.name} · `

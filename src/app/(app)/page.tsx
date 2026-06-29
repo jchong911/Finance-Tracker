@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { BudgetCoachCard } from "@/components/dashboard/BudgetCoachCard";
+import { BucketRingsChart } from "@/components/dashboard/BucketRingsChart";
 import { CategoryBreakdown } from "@/components/dashboard/CategoryBreakdown";
-import { MonthOverviewChart } from "@/components/dashboard/MonthOverviewChart";
+import { FinanceChatCard } from "@/components/dashboard/FinanceChatCard";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { AppShell } from "@/components/layout/AppShell";
 import { TransactionList } from "@/components/transactions/TransactionList";
-import { formatMoney, monthKey, monthLabel, spendingByCategory, summarizeMonth } from "@/lib/finance";
+import { buildBucketProgress } from "@/lib/budgetProgress";
+import { computeBucketTotals, resolveBuckets } from "@/lib/budgetRatios";
+import { monthKey, monthLabel, spendingByCategory, summarizeMonth } from "@/lib/finance";
 import {
   getActiveSavingsGoals,
+  getBudgetRatios,
   getCarryoverBeforeMonth,
   getGoalContributionsForMonth,
   getTransactionsForMonth,
@@ -21,11 +25,12 @@ function toAmount(value: unknown): number {
 
 export default async function DashboardPage() {
   const month = monthKey();
-  const [transactions, goals, carryover, monthContributions] = await Promise.all([
+  const [transactions, goals, carryover, monthContributions, ratios] = await Promise.all([
     getTransactionsForMonth(month),
     getActiveSavingsGoals(),
     getCarryoverBeforeMonth(month),
     getGoalContributionsForMonth(month),
+    getBudgetRatios(),
   ]);
   const summary = summarizeMonth(transactions);
   const topCategories = spendingByCategory(transactions);
@@ -45,16 +50,21 @@ export default async function DashboardPage() {
   const moneyPool = Math.max(0, carryover + summary.income);
   const totalOut = summary.expenses + monthlyGoalSetAside;
   const remainingPool = Math.max(0, moneyPool - totalOut);
+  const variableExpenses = Math.max(0, summary.expenses - fixedExpenses);
 
-  const chartSegments = [
-    { label: "Spent", value: Math.min(summary.expenses, moneyPool), color: "#f87171" },
-    {
-      label: "Set aside to goals",
-      value: Math.min(monthlyGoalSetAside, Math.max(0, moneyPool - summary.expenses)),
-      color: "#a78bfa",
-    },
-    { label: "Remaining money", value: remainingPool, color: "#3dd68c" },
-  ];
+  const buckets = resolveBuckets(ratios?.buckets);
+  const categoryMap = ratios?.category_bucket_map ?? {};
+  const bucketTotals = computeBucketTotals(
+    transactions,
+    buckets,
+    categoryMap,
+    monthlyGoalSetAside
+  );
+  const bucketProgress = buildBucketProgress(
+    summary.income,
+    buckets,
+    bucketTotals
+  );
 
   return (
     <AppShell
@@ -62,11 +72,11 @@ export default async function DashboardPage() {
       action={<SignOutButton />}
     >
       <div className="space-y-6">
-        <MonthOverviewChart
-          segments={chartSegments}
-          centerLabel="Money remaining"
-          centerValue={formatMoney(remainingPool)}
+        <BucketRingsChart
+          buckets={bucketProgress}
+          hasIncome={summary.income > 0}
         />
+        <SummaryCards summary={summary} fixedExpenses={fixedExpenses} />
         <BudgetCoachCard
           income={summary.income}
           expenses={summary.expenses}
@@ -74,7 +84,20 @@ export default async function DashboardPage() {
           savingsGoals={goalsTotal}
           topCategories={topCategories}
         />
-        <SummaryCards summary={summary} fixedExpenses={fixedExpenses} />
+        <FinanceChatCard
+          context={{
+            month: monthLabel(month),
+            income: summary.income,
+            expenses: summary.expenses,
+            fixedExpenses,
+            variableExpenses,
+            goalSetAside: monthlyGoalSetAside,
+            carryover,
+            moneyPool,
+            remaining: remainingPool,
+            topCategories: topCategories.slice(0, 5),
+          }}
+        />
         <CategoryBreakdown items={topCategories} />
 
         <section className="space-y-3">

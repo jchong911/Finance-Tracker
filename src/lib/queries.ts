@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type {
   Account,
+  BudgetRatios,
   Category,
   GoalContribution,
   SavingsGoal,
@@ -150,4 +151,10 @@ export async function getCarryoverBeforeMonth(month: string): Promise<number> {
     if (row.type === "expense") return sum - amount;
     return sum;
   }, 0);
+}
+
+export async function getBudgetRatios(): Promise<BudgetRatios | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("budget_ratios").select("*").single();
+  return (data ?? null) as BudgetRatios | null;
 }

@@ -9,6 +9,7 @@ const links = [
   { href: "/income", label: "Income", icon: "↑" },
   { href: "/expenditures", label: "Spend", icon: "↓" },
   { href: "/accounts", label: "Accounts", icon: "◫" },
+  { href: "/settings/ratios", label: "Ratios", icon: "⚙" },
 ];
 
 export function BottomNav() {

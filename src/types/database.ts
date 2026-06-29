@@ -41,6 +41,7 @@ export interface Transaction {
   description: string;
   occurred_on: string;
   is_fixed: boolean;
+  budget_bucket: "needs" | "wants" | null;
   attachment_path: string | null;
   attachment_name: string | null;
   attachment_mime: string | null;
@@ -74,4 +75,19 @@ export interface GoalContribution {
   amount: number;
   contributed_on: string;
   created_at: string;
+}
+
+export type BudgetRatioBucket = {
+  id: string;
+  name: string;
+  percent: number;
+};
+
+export interface BudgetRatios {
+  id: string;
+  user_id: string;
+  buckets: BudgetRatioBucket[];
+  category_bucket_map?: Record<string, string>;
+  created_at: string;
+  updated_at: string;
 }

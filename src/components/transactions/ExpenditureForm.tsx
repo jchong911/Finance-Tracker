@@ -37,6 +37,7 @@ export function ExpenditureForm({
     const occurredOn = String(form.get("occurred_on"));
     const receipt = form.get("receipt");
     const isFixed = form.get("is_fixed") === "on";
+    const budgetBucket = form.get("budget_bucket") === "wants" ? "wants" : "needs";
 
     if (!amount || amount <= 0) {
       setError("Enter a valid amount.");
@@ -125,6 +126,7 @@ export function ExpenditureForm({
       description,
       occurred_on: occurredOn,
       is_fixed: isFixed,
+      budget_bucket: budgetBucket,
       attachment_path: attachment?.path ?? null,
       attachment_name: attachment?.name ?? null,
       attachment_mime: attachment?.mime ?? null,
@@ -212,6 +214,35 @@ export function ExpenditureForm({
           </span>
         </span>
       </label>
+
+      <fieldset className="space-y-2">
+        <legend className="text-sm text-muted">Need or want?</legend>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-card-border bg-background px-3 py-2.5 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent-dim">
+            <input
+              type="radio"
+              name="budget_bucket"
+              value="needs"
+              defaultChecked
+              className="accent-[var(--accent)]"
+            />
+            <span>Need</span>
+          </label>
+          <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-card-border bg-background px-3 py-2.5 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent-dim">
+            <input
+              type="radio"
+              name="budget_bucket"
+              value="wants"
+              className="accent-[var(--accent)]"
+            />
+            <span>Want</span>
+          </label>
+        </div>
+        <p className="text-xs text-muted">
+          Needs go toward your necessary budget. Wants go toward discretionary
+          spending.
+        </p>
+      </fieldset>
 
       <Input
         label="Date"
